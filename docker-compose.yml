@@ -1,0 +1,84 @@
+version: "3"
+
+networks:
+  default:
+    name: docker
+    external: true
+  host:
+    name: host
+    external: true
+
+services:
+  mongo:
+    image: mongo
+    hostname: mongo
+    container_name: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ./mongo/data:/data/db
+    ports:
+      - 27017:27017
+
+  redis:
+    image: redis/redis-stack
+    hostname: redis
+    container_name: redis
+    restart: always
+    environment:
+      REDIS_ARGS: ${REDIS_ARGS}
+    volumes:
+      - ./redis/data:/data
+    ports:
+      - 6379:6379
+      - 8001:8001
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    hostname: rabbitmq
+    container_name: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - ./rabbitmq/data:/var/lib/rabbitmq
+      - ./rabbitmq/log:/var/log/rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 15692:15692
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    hostname: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres/data:/var/lib/postgres
+      - ./postgres/log:/var/log/postgres
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    hostname: pgadmin
+    restart: always
+    user: root
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - ./pgadmin/data:/var/lib/pgadmin
+      - ./pgadmin/log/:/var/log/pgadmin
+    ports:
+      - 5050:80
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
