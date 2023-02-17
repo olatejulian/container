@@ -1,0 +1,76 @@
+version: "3"
+
+networks:
+  host:
+    name: host
+    external: true
+
+services:
+  mongo:
+    image: mongo
+    hostname: mongo
+    container_name: mongo
+    restart: always
+    env_file:
+      - ./mongo/.env
+    volumes:
+      - ./mongo/data:/data/db
+    ports:
+      - 27017:27017
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    hostname: pgadmin
+    restart: always
+    user: root
+    env_file:
+      - ./pgadmin/.env
+    volumes:
+      - ./pgadmin/data:/var/lib/pgadmin
+      - ./pgadmin/log/:/var/log/pgadmin
+    ports:
+      - 5050:80
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    hostname: postgres
+    restart: always
+    env_file:
+      - ./postgres/.env
+    volumes:
+      - ./postgres/data:/var/lib/postgres
+      - ./postgres/log:/var/log/postgres
+    ports:
+      - 5432:5432
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    hostname: rabbitmq
+    container_name: rabbitmq
+    restart: always
+    env_file:
+      - ./rabbitmq/.env
+    volumes:
+      - ./rabbitmq/data:/var/lib/rabbitmq
+      - ./rabbitmq/log:/var/log/rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 15692:15692
+
+  redis:
+    image: redis/redis-stack
+    hostname: redis
+    container_name: redis
+    restart: always
+    env_file:
+      - ./redis/.env
+    volumes:
+      - ./redis/data:/data
+    ports:
+      - 6379:6379
+      - 8001:8001
