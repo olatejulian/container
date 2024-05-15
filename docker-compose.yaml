@@ -87,5 +87,3 @@ services:
       - ./sonarqube/log:/opt/sonarqube/logs
     ports:
       - 9000:9000
-
-
