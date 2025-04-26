@@ -1,5 +1,5 @@
-data/
-log/
 .env
-.vscode/
-.history/
+.history
+.vscode
+data
+log
